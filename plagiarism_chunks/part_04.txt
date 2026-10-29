@@ -1,0 +1,219 @@
+ Input
+ Expected
+ Result
+ Actual Result
+ Status
+TC07
+Customer opens
+admin dashboard
+API
+Customer token
+403 Forbidden
+403 “Admin
+privileges required”
+Pass
+TC08
+Customer creates a
+product
+Customer token
+403 Forbidden
+403 “Admin
+privileges required”
+Pass
+TC09
+Add invalid
+product to cart
+product_id =
+999999
+400 Bad
+Request
+400 “Invalid
+product_id”
+Pass
+TC10
+Checkout with
+invalid payment
+method
+payment_metho
+d = BITCOIN
+400 Bad
+Request
+400
+“payment_method
+must be one of
+[CARD, GPAY_QR,
+UPI]”
+Pass
+TC11
+Search with filters
+search=bed,
+min_price=1000
+Only matching
+products
+Filtered product list
+returned
+Pass
+TC12
+Open non-existing
+product
+/api/products/99
+9999
+404 Not Found
+404 “Product not
+found”
+Pass
+TC13
+View rental plans
+GET
+/api/rental-plans
+Monthly,
+Quarterly,
+Yearly
+3 plans with
+discounts returned
+Pass
+
+ DEPLOYMENT
+6.1 Deployment Overview:-
+After development and testing, FurniFlex was deployed to the cloud so that it can be accessed by
+anyone on the internet through a proper domain name over a secure HTTPS connection. The
+application is hosted on an Amazon Web Services (AWS) EC2 virtual server running Ubuntu
+Linux. The following technologies are used in the deployment:
+  AWS EC2 Instance: A virtual server in the AWS cloud on which the complete application
+runs. A Security Group acts as a firewall and only allows SSH (22), HTTP (80) and HTTPS
+(443) traffic.
+ Docker & Docker Compose: The FastAPI backend and the PostgreSQL database run as two
+containers managed by Docker Compose, exactly as in development. Data is kept in a Docker
+volume so it survives restarts.
+ Nginx (Reverse Proxy): Nginx is the single entry point for all traffic. It serves the built React
+files directly and forwards (reverse proxies) every /api and /static request to the backend
+container on 127.0.0.1:8000. It also terminates SSL, so the backend itself never handles
+certificates.
+ DuckDNS (Free Domain): DuckDNS is a free dynamic DNS service. It provides the
+sub-domain furniflex.duckdns.org and points it to the public IP address of the EC2 instance.
+A small cron job keeps the IP up to date.
+ Certbot (SSL Certificate): Certbot is the official client for Let’s Encrypt, a free certificate
+authority. It proves ownership of the domain, obtains a trusted SSL certificate, configures
+Nginx for HTTPS and renews the certificate automatically before it expires (every 90 days).
+6.2 Deployment Architecture:-
+The figure below shows how the different parts of the deployment are connected. A user’s browser
+first resolves the DuckDNS domain to the EC2 public IP, then connects to Nginx over HTTPS.
+Nginx serves the React application and forwards API and image requests to the FastAPI container,
+which reads and writes data in the PostgreSQL container.
+
+Components of the deployment:
+ Component
+ Technology
+ Role in Deployment
+ Port
+Cloud Server
+AWS EC2 (Ubuntu
+24.04 LTS)
+Hosts all components of the application
+–
+Firewall
+AWS Security Group
+Allows only SSH, HTTP and HTTPS
+from the internet
+22, 80, 443
+Domain Name
+DuckDNS
+Maps furniflex.duckdns.org to the EC2
+public IP
+–
+Reverse Proxy
+Nginx
+Serves React build, proxies /api and
+/static, terminates SSL
+80, 443
+SSL Certificate
+Certbot + Let’s Encrypt
+Free HTTPS certificate with automatic
+renewal
+–
+Frontend
+React (Vite build)
+Static files in /var/www/furniflex served
+by Nginx
+–
+Backend
+FastAPI container
+(Docker)
+REST API, authentication, image files
+8000 (localhost
+only)
+Database
+PostgreSQL 16
+container (Docker)
+Stores users, products, carts and orders
+5432 (Docker
+network only)
+
+ Fig 6.1: Deployment architecture of FurniFlex on AWS EC2
+
+6.3 Deployment Use Case Diagram:-
+ Fig 6.2: Use case diagram for deploying and accessing FurniFlex
+The Developer / DevOps Admin performs all deployment tasks: launching and securing the EC2
+instance, installing Docker and Nginx, setting up the DuckDNS domain, deploying the containers
+and the React build, configuring Nginx and obtaining the SSL certificate. DuckDNS and Let’s
+Encrypt are external systems that take part in the domain and certificate use cases. The End User
+(customer or store admin) simply opens the site over HTTPS and uses the application.
+
+6.4 Deployment Flow:-
+ Fig 6.3: Step-by-step deployment flow on AWS EC2
+
+6.5 Step-by-Step Deployment on AWS EC2:-
+The following steps were used to deploy FurniFlex. The domain used in this report is
+furniflex.duckdns.org; values shown in angle brackets (for example <EC2-PUBLIC-IP>) are
+replaced with the real values of the server.
+Step 1: Launch the EC2 Instance
+Log in to the AWS Management Console, open EC2 → Instances → Launch instance and choose
+the following settings:
+ Setting
+ Value
+Name
+furniflex-server
+AMI (Operating System)
+Ubuntu Server 24.04 LTS (64-bit x86)
+Instance type
+t2.micro / t3.micro (free tier) or t3.small
+Key pair
+Create new key pair → furniflex-key.pem (downloaded and kept safe)
+Storage
+20 GB gp3 EBS volume
+Elastic IP (optional)
+Allocate and associate, so the public IP does not change after a stop /
+start
+Step 2: Configure the Security Group (Firewall)
+While launching the instance, a security group was created with the following inbound rules. All
+outbound traffic is allowed.
+ Type
+ Protocol
+ Port
+ Source
+ Purpose
+SSH
+TCP
+22
+My IP
+Remote login for the developer only
+HTTP
+TCP
+80
+0.0.0.0/0, ::/0
+Let’s Encrypt challenge and redirect to
+HTTPS
+HTTPS
+TCP
+443
+0.0.0.0/0, ::/0
+Secure access to the website
+Ports 8000 (backend) and 5432 (database) are not opened, so they cannot be reached directly from
+the internet – all traffic must go through Nginx.
+Step 3: Connect to the Server using SSH
+From the developer’s computer, the downloaded key file is protected and used to log in:
+
+Step 4: Install Docker, Git and Nginx
+The system packages are updated and the required software is installed. Docker is installed with the
+official convenience script, which also installs the Docker Compose plugin.
+Because a micro instance has only 1 GB of RAM, a 2 GB swap file is added so that the Docker

@@ -1,0 +1,170 @@
+A robust relational database management system (PostgreSQL) is used for storing, retrieving and
+managing all data related to users, products, carts and orders. The database must ensure data
+integrity, security and efficient access.
+• User Data Management:
+ o The database must securely store user information including personal details, login
+credentials (passwords hashed with bcrypt, never stored in plain text) and the role flag.
+o E-mail addresses must be unique so that one e-mail cannot be registered twice.
+• Catalogue Data Management:
+ o Categories and products are stored in separate tables linked by a foreign key; deleting a
+category removes its products (cascade).
+o Product image paths are stored as a JSON list, while the image files themselves are stored
+on disk and served by the backend under /static/images.
+• Order Data Management:
+ o Orders and order items are stored in separate tables. Each order item keeps the product,
+rental plan, quantity and the price at the time of ordering, so later price changes do not
+
+affect old orders.
+• Backup and Recovery:
+ o Database data is stored in a named Docker volume (furniflex_pgdata), so it persists across
+container restarts. Regular backups can be taken with the standard pg_dump utility.
+
+ DIAGRAMS
+1. System Flow Chart
+ Fig 3.1: System flowchart of FurniFlex
+
+2. Use Case Diagram
+ Fig 3.2: Use case diagram (Customer and Admin)
+
+3. Activity Diagram
+ Fig 3.3: Activity diagram for renting furniture
+
+4. Class Diagram
+ Fig 3.4: Class diagram (SQLAlchemy models)
+
+5. Sequence Diagram
+ Fig 3.5: Sequence diagram for login, add to cart and checkout
+
+6. ER Diagram
+ Fig 3.6: Entity relationship diagram of the PostgreSQL database
+
+7. Gantt Chart
+ Fig 3.7: Project schedule (Gantt chart)
+
+ PROGRAM CODE
+This chapter lists the complete source code of the FurniFlex application. The code is organised into
+a Python FastAPI backend (configuration, security, database models, schemas and API routers) and
+a React frontend (routing, theme, contexts, API services, reusable components and pages).
+Screenshots of the running application are included as Output after the corresponding page.
+ TESTING
+5.1 Testing Approach:-
+1. Introduction to Testing
+Testing is a crucial phase in the software development life cycle that ensures the web application
+functions as intended. For this project both manual and tool-assisted testing techniques were applied
+to validate the application’s functionality, security and user experience. The primary focus was to
+ensure that the React frontend, the FastAPI backend and the PostgreSQL database work together
+seamlessly and that the business rules (rental plan pricing, cart handling, checkout and admin-only
+access) execute correctly.
+2. Testing Environment
+  Development Platform: VS Code, macOS
+ Technology Stack: React (Vite) + Material UI, Python FastAPI, SQLAlchemy
+ Server: Uvicorn (inside Docker), Vite development server
+ Database: PostgreSQL 16 (Docker container)
+ Tools: Swagger UI (/docs), browser developer tools, psql
+3. Types of Testing Conducted
+a. API (Unit) Testing
+  Objective: To test each REST endpoint independently.
+ Approach: Every endpoint was called through the auto-generated Swagger UI with valid and
+invalid inputs, and the HTTP status codes and JSON responses were checked – for example
+201 on successful registration, 401 for a wrong password, 403 when a customer calls an admin
+endpoint and 422 for an invalid e-mail.
+b. Integration Testing
+  Objective: To ensure proper interaction between the React pages, the API and the database.
+ Approach: The complete flow from the React pages (Axios calls with the JWT token) to the
+FastAPI routers and then to PostgreSQL was tested, e.g. adding an item to the cart on the
+product page and verifying that it appears in the cart page and in the cart_items table.
+c. Functional Testing
+  Objective: To verify that each feature works as per the requirements.
+ Approach: Manual testing was performed on each functionality, such as:
+ o User registration, login and logout.
+o Profile management.
+o Browsing categories, global search, filters and sorting.
+
+o Rental plan selection, cart add / update / remove.
+o Checkout with Card, UPI and GPay QR and order history.
+o Admin product / category CRUD, image upload and order status update.
+d. Database Testing
+  Objective: To verify the integrity of data stored in and retrieved from PostgreSQL.
+ Approach: Queries were executed to check the correctness of insertion, updates and deletions
+in tables such as users, products, cart_items, orders and order_items, and to confirm that the
+cart is cleared and price_at_order is stored after checkout.
+e. User Interface Testing
+  Objective: To ensure that the user interface provides a seamless experience across browsers
+and screen sizes.
+ Approach: The UI was tested in Chrome, Firefox and Edge, in both light and dark modes, and
+at mobile, tablet and desktop widths using the browser’s responsive design mode.
+f. Security Testing
+  Objective: To confirm that protected data and admin functions cannot be accessed without
+authorisation.
+ Approach: Requests were sent without a token, with a tampered token and with a customer
+token to admin endpoints; all were correctly rejected with 401 or 403.
+5.2 Test Cases:-
+The following test cases were executed against the running application and API:
+ ID
+ Test Scenario
+ Input
+ Expected
+ Result
+ Actual Result
+ Status
+TC01
+Login with valid
+credentials
+demo@furniflex
+.com / correct
+password
+200 OK with
+JWT token
+Token returned, user
+logged in
+Pass
+TC02
+Login with wrong
+password
+Valid e-mail,
+wrong password
+401
+Unauthorized
+401 “Incorrect email
+or password”
+Pass
+TC03
+Register with
+existing e-mail
+Already
+registered e-mail
+400 Bad
+Request
+400 “Email already
+registered”
+Pass
+TC04
+Register with
+invalid e-mail
+“notanemail”
+422 Validation
+error
+422 “value is not a
+valid email address”
+Pass
+TC05
+Access profile
+without login
+No token
+401
+Unauthorized
+401 “Not
+authenticated”
+Pass
+TC06
+Access with
+tampered token
+Modified JWT
+401
+Unauthorized
+401 “Could not
+validate credentials”
+Pass
+
+ ID
+ Test Scenario

@@ -16,7 +16,7 @@ export default function ProductCard({ product }) {
           component="img"
           image={resolveImageUrl(product.image_urls?.[0])}
           alt={product.name}
-          sx={{ height: 200, objectFit: "cover" }}
+          sx={{ height: 200, objectFit: "contain", bgcolor: "grey.100" }}
         />
         {product.is_featured && (
           <Chip

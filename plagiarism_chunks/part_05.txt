@@ -1,0 +1,126 @@
+image build and the React build do not run out of memory:
+Step 5: Create a Free Domain with DuckDNS
+On https://www.duckdns.org the developer signs in (with GitHub / Google), creates the
+sub-domain furniflex and enters the EC2 public IP in the current ip field. The domain
+furniflex.duckdns.org now points to the server. DuckDNS also shows a personal token, which is
+used by a small script to keep the IP address up to date:
+The DNS record can be checked with nslookup furniflex.duckdns.org, which should return the EC2
+public IP.
+
+Step 6: Clone the Project and Set Production Values
+The source code is cloned from GitHub. Before starting the containers, the development defaults in
+docker-compose.yml are changed for production: a strong database password and JWT secret, the
+HTTPS domain as the allowed CORS origin, the backend bound to localhost only, and the public
+PostgreSQL port removed.
+Changed parts of docker-compose.yml:
+Step 7: Start the Backend and Database with Docker
+Docker Compose builds the backend image, starts PostgreSQL, waits for its health check, seeds the
+database (categories, rental plans, products and demo accounts) and starts the FastAPI server.
+Step 8: Build the React Frontend
+Node.js 22 is installed and the React application is built with the production API address. The
+generated dist/ folder contains static HTML, CSS and JavaScript files, which are copied to the
+Nginx web root.
+
+Step 9: Configure Nginx as a Reverse Proxy
+A new Nginx site is created. The / location serves the React files (falling back to index.html so that
+React Router URLs such as /products/5 work on refresh), while /api/ and /static/ are forwarded to
+the FastAPI container.
+The site is enabled, the default site is removed, the configuration is tested and Nginx is reloaded:
+
+At this point the site is already reachable at http://furniflex.duckdns.org (without HTTPS).
+Step 10: Obtain a Free SSL Certificate with Certbot
+Certbot and its Nginx plugin are installed. Certbot contacts Let’s Encrypt, completes the HTTP-01
+challenge on port 80, installs the certificate in the Nginx configuration and adds an automatic
+redirect from HTTP to HTTPS.
+Certbot adds the following lines to the Nginx server block automatically:
+Let’s Encrypt certificates are valid for 90 days. The Certbot package installs a systemd timer that
+renews them automatically; renewal is tested with a dry run:
+Step 11: Verify the Live Deployment
+Finally the deployment is verified from a browser and from the terminal:
+ Check
+ How
+ Expected Result
+Website opens over
+HTTPS
+Open https://furniflex.duckdns.org
+FurniFlex home page with
+padlock icon
+HTTP redirects to HTTPS
+301 Moved Permanently →
+https://
+API works through Nginx
+ental-plans
+JSON list of 3 rental plans
+Images load
+Open any category page
+Product images visible (/static via
+Nginx)
+Page refresh on inner route
+Refresh https://furniflex.duckdns.org/c
+ategories
+Page loads (no 404)
+Backend not public
+Open http://<EC2-PUBLIC-IP>:8000
+Connection fails (port closed)
+Login & admin panel
+Log in as admin
+Admin dashboard and CRUD
+work
+
+6.6 Request Flow (HTTPS):-
+ Fig 6.4: How a browser request travels through DuckDNS, Nginx, FastAPI and PostgreSQL
+When a user opens the website, the browser first asks DuckDNS for the IP address of the domain. It
+then opens an encrypted HTTPS connection to Nginx on the EC2 instance. Requests for pages are
+answered directly by Nginx from the React build, while every request beginning with /api or /static
+is forwarded to the FastAPI container on 127.0.0.1:8000. FastAPI queries PostgreSQL and returns
+JSON (or an image), which Nginx sends back to the browser over the same secure connection.
+
+6.7 SSL Certificate Flow (Certbot + Let’s Encrypt):-
+ Fig 6.5: Obtaining and renewing the SSL certificate with Certbot
+Let’s Encrypt issues a certificate only after verifying that the requester controls the domain. Certbot
+places a temporary token file on the Nginx server; Let’s Encrypt resolves the DuckDNS domain and
+downloads the token over port 80. Once the token matches, the signed certificate is returned, Certbot
+updates the Nginx configuration for HTTPS and reloads Nginx. The certbot systemd timer repeats
+this process automatically before the certificate expires.
+6.8 Maintenance & Updates:-
+When new code is pushed to GitHub, the live server is updated with the following commands:
+Useful commands for monitoring and troubleshooting:
+ Task
+ Command
+Container status
+Backend logs
+Restart application
+
+ Task
+ Command
+Nginx error log
+Test / reload Nginx
+Certificate status
+Database backup
+DuckDNS update log
+
+ ADVANTAGES
+7.1 Advantages:-
+The FurniFlex web application developed using React, FastAPI and PostgreSQL provides several
+key advantages that enhance the functionality, reliability and usability of the furniture rental
+platform:
+1. Affordable and Flexible Renting:
+Customers can rent furniture on Monthly, Quarterly or Yearly plans with automatic discounts for
+longer durations, avoiding the large up-front cost of buying furniture.
+2. Server-side Cart:
+The cart is stored in the database against the logged-in user, so items remain available even after the
+browser is closed or when the customer logs in from another device.
+3. Secure Authentication and Role-based Access:
+Passwords are hashed with bcrypt and every request is authenticated with a signed JWT token.
+Admin APIs are protected on the server side, so a customer cannot access them even by calling the
+API directly.
+4. Device Flexibility and Modern UI:
+The responsive Material UI design works on laptops, tablets and smartphones, and supports both
+light and dark modes, which are remembered for the next visit.
+5. Simplified Catalogue Management:
+Administrators can add, edit and delete products and categories and upload images directly from the
+admin panel without touching the code or the database.
+6. Accurate Order Records:
+Each order item stores the price at the time of ordering and the selected rental plan, so historical
+orders remain correct even if product prices change later.
+7. Fast and Self-documenting API:

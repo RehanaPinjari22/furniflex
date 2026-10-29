@@ -1,0 +1,128 @@
+admin CRUD, image upload, search, dark mode) was developed as a small increment and
+tested immediately through the Swagger UI and the browser before moving to the next one.
+ Deployment and Maintenance: The backend and database were containerised with Docker
+and Docker Compose and deployed on an AWS EC2 Ubuntu server. Nginx serves the React
+build and forwards API requests to the backend container, DuckDNS provides the domain
+name and Certbot installs a free Let’s Encrypt SSL certificate.
+1.5 Hardware Requirements:-
+  Development Computer: A laptop or desktop with an Intel i3 / i5 processor (or equivalent) or
+higher, at least 8 GB of RAM (recommended for running Docker, the Node.js development
+server and a browser together) and at least 20 GB of free storage.
+ Production Server: An AWS EC2 instance (t2.micro / t3.micro free tier or t3.small) running
+Ubuntu Server 24.04 LTS with 1–2 GB RAM (plus swap), 1–2 vCPU and a 20 GB EBS
+volume.
+ Client Devices: Any device with a modern web browser – desktop, laptop, tablet or
+smartphone – can be used to access the application, as the interface is fully responsive.
+ Internet Connection: A stable internet connection is needed for installing packages,
+deploying to AWS and for users to access the hosted application.
+ Input Devices: Standard input devices such as a keyboard, mouse or touchpad / touch screen.
+1.6 Software Requirements:-
+ Component
+ Software / Technology
+ Purpose
+Operating System
+Windows / macOS (development),
+Ubuntu 24.04 LTS (server)
+Development and hosting
+environment
+Frontend
+React 19, Vite, Material UI v7, React
+Router v7, Axios
+User interface, routing and API calls
+Backend
+Python 3.12, FastAPI, Uvicorn
+REST API and business logic
+ORM / Validation
+SQLAlchemy 2.0, Pydantic v2
+Database models and request
+validation
+
+ Component
+ Software / Technology
+ Purpose
+Security
+python-jose (JWT), bcrypt
+Token authentication and password
+hashing
+Database
+PostgreSQL 16
+Relational data storage
+Containers
+Docker, Docker Compose
+Containerised backend and database
+Cloud
+AWS EC2, Security Groups
+Hosting the live application
+Web Server
+Nginx
+Reverse proxy and serving the React
+build
+Domain & SSL
+DuckDNS, Certbot (Let’s Encrypt)
+Free domain name and HTTPS
+certificate
+Tools
+VS Code, Git & GitHub, Node.js & npm,
+Swagger UI, SSH
+Coding, version control, API testing,
+server access
+Browser
+Google Chrome / Firefox / Edge
+Running and testing the web
+application
+
+ FUNCTIONAL REQUIREMENTS
+The development of an online furniture rental system necessitates clear functional requirements to
+ensure that the platform meets the needs of all its stakeholders – customers and administrators.
+These functional requirements outline the expected behaviour of the system and define how it
+should operate in various scenarios.
+2.1 User Management :-
+• Admin Functions:
+ o Secure Admin Access: The admin must be able to log in through the same login page; the
+system identifies administrators by the is_admin flag and shows the Admin Panel link
+only to them.
+o Dashboard: The admin dashboard must show key statistics such as total products, total
+categories, total users, total orders and total revenue.
+o Product Management: The admin must be able to add, edit and delete products,
+including name, category, description, monthly/quarterly/yearly prices, deposit, stock
+quantity, featured flag and multiple images.
+o Category Management: The admin must be able to add, edit and delete categories with a
+name, slug, description and cover image.
+o Image Upload: The admin must be able to upload images (JPG, PNG, WEBP, GIF up to
+5 MB), which are stored in a per-category folder on the server.
+o Order Management: The admin must be able to view all customer orders and change
+their status (Placed, Confirmed, Delivered, Returned, Cancelled).
+o User Monitoring: The admin must be able to view the list of all registered users with
+their contact details and role.
+• Customer Functions:
+ o Account Access: Customers must be able to register with name, e-mail, phone and
+password, log in securely and log out.
+o Profile Management: Customers must be able to view and update their name, phone
+number and address.
+o Browsing: Customers must be able to browse categories, search products, filter by price
+and category, sort results and view complete product details with an image gallery.
+o Renting: Customers must be able to add products to their cart with a selected rental plan
+and quantity, place orders and view their complete order history with status.
+2.2 Rental & Order Management :-
+• Rental Plans:
+
+o The system must support three rental plans – Monthly (1 month), Quarterly (3 months,
+10% discount) and Yearly (12 months, 25% discount).
+o The price shown in the cart and saved in the order must match the plan selected by the
+customer.
+• Cart Management:
+ o The cart must be stored on the server against the logged-in user, so it is available on any
+device.
+o Adding the same product with the same plan again must increase the quantity instead of
+creating a duplicate line. Customers must be able to change quantity/plan or remove items.
+• Checkout and Payment:
+ o Checkout must require a shipping address and a payment method (Card, UPI or GPay
+QR).
+o The payment step is a simulation only – no real payment is processed and only a masked
+reference (e.g. “Card ending 1234” or the UPI ID) is saved against the order.
+o On successful checkout the system must create an order with its order items, store the
+price at the time of order, set the status to PLACED and clear the cart.
+• Order Tracking:
+ o Customers must be able to see all their past orders with items, plan, amount, payment
+method and current status. Customers must not be able to see other users’ orders.
+2.3 Database Management :-

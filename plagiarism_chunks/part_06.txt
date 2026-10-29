@@ -1,0 +1,115 @@
+FastAPI automatically generates interactive Swagger documentation for every endpoint, which
+makes testing and future integration (for example a mobile app) much easier.
+8. Live, Secure and Low-cost Deployment:
+The application runs on AWS EC2 using Docker, so the same containers work in development and
+production. Nginx, a free DuckDNS domain and a free Let’s Encrypt certificate make the site
+publicly available over HTTPS at almost no cost, and the backend and database ports are never
+exposed to the internet.
+
+ LIMITATIONS
+7.2 Limitations:-
+While the FurniFlex application provides a functional platform for renting furniture online, several
+limitations have been identified during its development:
+1. No Real Payment Gateway:
+The Card / UPI / GPay QR payment step is only a simulation for demonstration. No real payment is
+processed, so the system cannot yet be used for actual business transactions.
+2. No Automatic Stock Update:
+Products have a stock quantity, but it is not automatically reduced when an order is placed, and
+rental start, end and return dates of each rented item are not tracked.
+3. No Notifications:
+Customers do not receive e-mail or SMS confirmations for registration, orders or status changes,
+and there is no “forgot password” feature.
+4. No Reviews or Wishlist:
+Customers cannot rate or review products or save items to a wishlist for later.
+5. Single-server Deployment:
+The whole application runs on one EC2 instance with product images on its local disk. If the
+instance fails, the site is down until it is restored, and the setup cannot scale horizontally without
+moving images to shared storage (such as S3) and the database to a managed service.
+6. Manual Deployment and No Automated Tests:
+Updates are deployed manually over SSH, tables are created with SQLAlchemy’s create_all()
+instead of migrations, and testing was done manually rather than with an automated test suite.
+
+ PLAGIARISM CHART
+7.3 Plagiarism Chart:-
+ Attach the plagiarism scan report for this project here.
+
+ FUTURE SCOPE
+8.1 Future Scope:-
+The FurniFlex web application has laid a solid foundation for renting furniture online. However,
+several enhancements and new features can be integrated in the future to improve its functionality,
+security and scalability. Based on the analysis of the current advantages and limitations, the
+following areas offer potential for future development:
+1. Real Payment Gateway Integration:
+Integrating a payment gateway such as Razorpay or Stripe with support for UPI AutoPay would
+allow real payments and automatic monthly rent collection.
+2. Inventory and Rental Period Tracking:
+Stock could be reduced automatically on each order, and the system could track delivery date, rental
+end date, renewals and returns of each rented item.
+3. E-mail / SMS Notifications and OTP:
+Order confirmations, status updates, rent-due reminders, OTP based login and a “forgot password”
+flow could be added.
+4. Reviews, Ratings and Wishlist:
+Customers could rate and review products and save favourites to a wishlist, helping other users
+make better decisions.
+5. Scalable Cloud Architecture:
+Images could be moved to Amazon S3 with CloudFront CDN, the database to Amazon RDS, and
+multiple EC2 instances could run behind an Application Load Balancer with a custom paid domain
+managed in Route 53.
+6. Mobile Application:
+Because the backend is a documented REST API, a native Android / iOS app could reuse the same
+API.
+7. Maintenance and Damage Requests:
+Customers could raise service, relocation or damage requests for rented furniture and track them
+from their account.
+8. Advanced Analytics for Admin:
+Charts for monthly revenue, most rented products, category-wise demand and customer retention
+could be added to the admin dashboard.
+9. Automated Testing and CI/CD:
+
+Automated tests with pytest and React Testing Library, database migrations with Alembic and a
+GitHub Actions pipeline that builds and deploys to EC2 automatically on every push would make
+future development safer and faster.
+
+ CONCLUSION
+8.2 Conclusion:-
+The development of FurniFlex using React, FastAPI and PostgreSQL provided a comprehensive
+understanding of modern full-stack web application architecture. Separating the system into a React
+single-page frontend, a REST API backend and a relational database made each layer easier to
+design, test and maintain.
+Through this project we successfully implemented user registration and JWT based authentication,
+profile management, category-wise browsing with global search, filters and sorting, rental plans
+with automatic discounts, a server-side cart, checkout with a simulated payment step, order history
+and a complete admin panel with product, category, image, order and user management.
+FastAPI with Pydantic made it possible to build a fast, validated and self-documenting API, while
+SQLAlchemy mapped the seven database tables to clean Python classes. On the frontend, React
+with Material UI enabled a responsive and attractive interface with light and dark themes.
+The project was taken beyond local development by deploying it on an AWS EC2 instance. Docker
+Compose runs the backend and database, Nginx acts as a reverse proxy and serves the React build,
+DuckDNS provides a free domain name and Certbot secures the site with a free Let’s Encrypt SSL
+certificate. This gave practical experience of Linux servers, cloud networking, DNS, firewalls and
+HTTPS.
+Overall, the project demonstrated how modern open-source technologies and cloud services can be
+combined to build and host a secure, efficient and user-friendly e-commerce style application. With
+features such as real payment integration, notifications, inventory tracking and a scalable cloud
+architecture, FurniFlex can grow into a production-ready furniture rental service.
+
+ REFERENCES
+8.3 References:-
+  React: https://react.dev/
+ Vite: https://vite.dev/guide/
+ Material UI: https://mui.com/material-ui/getting-started/
+ React Router: https://reactrouter.com/
+ Axios: https://axios-http.com/docs/intro
+ FastAPI: https://fastapi.tiangolo.com/
+ SQLAlchemy: https://docs.sqlalchemy.org/en/20/
+ Pydantic: https://docs.pydantic.dev/
+ PostgreSQL: https://www.postgresql.org/docs/
+ Docker & Docker Compose: https://docs.docker.com/
+ AWS EC2: https://docs.aws.amazon.com/ec2/
+ Nginx: https://nginx.org/en/docs/
+ Certbot: https://certbot.eff.org/
+ Let’s Encrypt: https://letsencrypt.org/docs/
+ DuckDNS: https://www.duckdns.org/install.jsp
+ JSON Web Tokens: https://jwt.io/introduction
+ Python: https://docs.python.org/3.12/
+ HTML, CSS & JavaScript: https://developer.mozilla.org/en-US/docs/Web

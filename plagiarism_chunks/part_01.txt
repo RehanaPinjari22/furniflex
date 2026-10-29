@@ -1,0 +1,102 @@
+ 6.7
+ SSL Certificate Flow (Certbot)
+ 6.8
+ Maintenance & Updates
+ 7.
+ ADVANTAGES & LIMITATIONS
+ 139
+ 7.1
+ Advantages
+ 7.2
+ Limitations
+ 7.3
+ Plagiarism Chart
+ 8.
+ CONCLUSION
+ 142
+ 8.1
+ Future Scope
+ 8.2
+ Conclusion
+ 8.3
+ References
+
+ INTRODUCTION
+1.1 Introduction:-
+Furniture is one of the largest one-time expenses for anybody setting up a home. Students, young
+professionals and families who relocate frequently for work or study often find that buying furniture
+outright is expensive, difficult to transport and hard to resell when they move again. Renting
+furniture on a monthly basis has therefore become a popular alternative in Indian cities, where
+customers pay a small monthly rent instead of a large up-front price.
+“FurniFlex” is a full-stack furniture rental web application built to address this need. It allows
+customers to browse furniture across multiple categories such as Bedroom, Living Room, Dining,
+Study, Storage, Chairs and complete BHK combos, choose a rental plan (Monthly, Quarterly or
+Yearly), add items to a cart, check out with a simulated Card / UPI / GPay QR payment step and
+track their orders. All prices are shown in Indian Rupees (₹) and longer rental plans automatically
+receive a discount.
+The application also provides a dedicated Admin Panel through which the store administrator can
+view dashboard statistics, add, edit and delete products and categories (with image upload), manage
+the status of customer orders and view the list of registered users. The frontend is developed in
+React with Material UI, the backend is a REST API written in Python using the FastAPI
+framework, and data is stored in a PostgreSQL relational database. The backend and database run
+inside Docker containers, and the complete application is deployed on an AWS EC2 instance
+behind an Nginx reverse proxy with a free DuckDNS domain and an HTTPS certificate from Let’s
+Encrypt (Certbot).
+By moving the complete rental process online, FurniFlex reduces paperwork for the store, makes the
+catalogue available to customers at any time from any device and gives the administrator a single
+place to manage products and orders.
+1.2 Objectives:-
+The primary objectives of the “FurniFlex” furniture rental platform are outlined as follows:
+  Make Furniture Affordable and Flexible: To provide a simple online platform where
+customers can rent quality furniture on flexible monthly, quarterly or yearly plans instead of
+buying it, with the rent and discount calculated automatically.
+ Improve Accessibility and Usability: To design a clean, responsive and attractive user
+interface (with light and dark themes) that works equally well on mobile phones, tablets and
+desktops.
+ Streamline the Rental Process: To automate the complete rental flow – browsing, plan
+selection, cart, checkout and order history – so that no manual paperwork is needed.
+
+ Simplify Store Management: To give administrators an easy panel to manage products,
+categories, images, orders and users from one place.
+ Ensure Security and Data Integrity: To protect user accounts with hashed passwords and
+JWT based authentication, to restrict all admin operations to authorised administrators only,
+and to serve the live site only over HTTPS.
+ Make the Application Live: To deploy the application on the cloud (AWS EC2) so that it is
+publicly accessible through a domain name with a valid SSL certificate.
+1.3 Scope:-
+The scope of “FurniFlex” is focused on delivering a complete furniture rental management platform
+with the following core features:
+  User Management: The system supports two roles – Customer and Administrator.
+Customers can register, log in, manage their profile, rent furniture and view their orders.
+Administrators have full control over the catalogue, orders and users.
+ Catalogue Browsing and Search: Products are organised into categories, each with images, a
+description, a refundable deposit, stock quantity and three rental prices. Customers can search
+globally from the navigation bar, filter by category and price and sort by price or newest.
+ Rental Plans: Every product can be rented on a Monthly, Quarterly (10% discount) or Yearly
+(25% discount) plan. The selected plan is stored with each cart item and order item.
+ Cart, Checkout and Orders: Customers can add, update and remove cart items, enter a
+shipping address and choose a payment method (Card, UPI or GPay QR). Orders are saved
+with their status and can be tracked in Order History.
+ Admin Panel: Administrators can view dashboard statistics, perform CRUD operations on
+products and categories, upload images, change order status (Placed, Confirmed, Delivered,
+Returned, Cancelled) and view users.
+ Cloud Deployment: The application is hosted on an AWS EC2 instance using Docker, with
+Nginx as a reverse proxy, a free DuckDNS sub-domain and a Let’s Encrypt SSL certificate
+issued by Certbot.
+Out of scope: real payment gateway integration (the payment step is a demo only and no card data
+is stored), e-mail/SMS notifications, product reviews and multi-vendor support.
+1.4 Methodology:-
+The development of the “FurniFlex” platform follows an Agile development methodology,
+particularly an Incremental approach. The system was built in layers – database first, then the
+REST API, then the user interface – with new features added and tested in short iterations. The
+process of development can be divided into the following stages:
+
+ Requirement Gathering and Analysis: The features of popular furniture rental services were
+studied and a feature list was prepared covering registration, browsing, rental plans, cart,
+checkout, order history and the admin panel. A reference mock-up in a warm amber/cream
+theme was used to define the visual style.
+ System Design and Architecture: A three-tier architecture was designed: a React single-page
+application (presentation layer), a FastAPI REST API (business logic layer) and a PostgreSQL
+database (data layer). The relational schema was designed with seven tables – users,
+categories, products, rental_plans, cart_items, orders and order_items.
+ Iterative Development and Testing: Each feature (authentication, catalogue, cart, checkout,

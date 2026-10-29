@@ -78,7 +78,7 @@ export default function ProductDetails() {
             component="img"
             src={resolveImageUrl(product.image_urls?.[selectedImage])}
             alt={product.name}
-            sx={{ width: "100%", height: 420, objectFit: "cover", borderRadius: 5 }}
+            sx={{ width: "100%", height: 420, objectFit: "contain", borderRadius: 5, bgcolor: "grey.100" }}
           />
           {product.image_urls?.length > 1 && (
             <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>

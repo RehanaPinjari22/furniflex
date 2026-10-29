@@ -70,7 +70,7 @@ export default function Cart() {
                     component="img"
                     src={resolveImageUrl(item.product.image_urls?.[0])}
                     alt={item.product.name}
-                    sx={{ width: 100, height: 100, objectFit: "cover", borderRadius: 3 }}
+                    sx={{ width: 100, height: 100, objectFit: "contain", borderRadius: 3, bgcolor: "grey.100" }}
                   />
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="subtitle1" fontWeight={600}>
